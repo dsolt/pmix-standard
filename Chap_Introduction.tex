@@ -1,117 +1,161 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter: Introduction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Charter - (who is the community, what is the goal (mission statement))
+% Terminology - Could be a reference to full section later in the document
+% Standard Overview - Architecture (the roll of PMIx and introduction to the important software components (e.g. resource managers, etc)
+% Required functionality? (What must be part of an implementation.. possibly leave to other WG?, originally was meant to more like MPI section that defines scope, e.g. debugger's in MPI, etc.  Refer to "use cases" as these sections get developed and how implementations may choose which they support)
+
 \chapter{Introduction}
 
 % ISSUE175: Make sure that in the end this introduction still includes the overall system description for HPC and the assumptions we are making (without forcing a particular architecture/implementation of PMIx)
 
-\label{chap:intro}
+\ac{PMIx} is an application programming interface specification to provide
+High Performance Computing libraries and programming models with
+portable and well defined access to commonly needed
+distributed computing system software.
+The \ac{PMIx} community strives to define interfaces to support the most widely
+used HPC programming models and libraries.
+\ac{PMIx} gives distributed systems software providers a better understanding of what
+services can be provided to best support these programming models.
+It also encourages the implementation of \ac{PMIx} APIs which allow for
+portable access to these varied system software services and the
+fuctionalities they offer.   Although these APIs can be implemented directly by the
+system software components providing them, the \ac{PMIx} community
+feels the development of centralized \ac{PMIx} implementations better serve the
+HPC community.  Such implementations can interface
+with existing system software or directly implement PMIx API's which are
+not already provided by existing system software components.
+\ac{PMIx} allows programming languages and libraries to focus on their core
+competencies without having to provide their own services to provide
+functionalities that are better provided at a system level.
 
-The \ac{PMI} has been used for quite some time as a means of exchanging wireup information needed for inter-process communication.
+\section{History of PMIx}
+\label{chap:history}
 
-% ISSUE175: Consider a background section for this inital material or just summarize briefly key points from this material and add to the a), b) c) list below(not bulleted list, next list down)
+The concept of a portable interface for process management predates \ac{PMIx}.
+\ac{PMI} has been used for quite some time as a means of exchanging wireup information needed for inter-process communication.  Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort, with PMI-2 demonstrating better scaling properties than its PMI-1 predecessor.
+\ac{PMIx} was intended to expand on the PMI effort,
+and was not designed to be a radical shift away from the basic concepts introduced by
+its predecessors.
+\ac{PMIx} API's were designed to easily allow a \ac{PMIx} implementation to 
+be capable of easily supporting both of the existing PMI-1 and PMI-2 \acp{API} with 
+minimal effort.
 
-Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort, with PMI-2 demonstrating better scaling properties than its PMI-1 predecessor. However, two significant challenges face the \ac{HPC} community as it continues to move towards machines capable of exaflop and higher performance levels:
-
-% ISSUE175: If we get rid of this section, we need to introduce PMI-1 and PMI-2 somewhere.
-
-\begin{itemize}
-\item the physical scale of the machines, and the corresponding number of total processes they support, is expected to reach levels approaching  1 million processes executing across 100 thousand nodes. Prior methods for initiating applications relied on exchanging communication endpoint information between the processes, either directly or in some form of hierarchical collective operation. Regardless of the specific mechanism employed, the exchange across such large applications would consume considerable time, with estimates running in excess of 5-10 minutes; and
-    %  ISSUE175: Perhaps this could be more about “scalability is a goal of this API” vs “PMI-previous didn’t scale well and this does(which is not supported by the text anyway)”
-
-\item whether it be hybrid applications that combine OpenMP threading operations with MPI, or application-steered workflow computations, the HPC community is experiencing an unprecedented wave of new approaches for computing at exascale levels. One common thread across the proposed methods is an increasing need for orchestration between the application and the \ac{SMS} comprising the scheduler (a.k.a. the \ac{WLM}), the \ac{RM}, global file system, fabric, and other subsystems. The lack of available support for application-to-SMS integration has forced researchers to develop "virtual" environments that hide the SMS behind a customized abstraction layer, but this results in considerable duplication of effort and a lack of portability.
-
-% ISSUE175:  If we get rid of this, make sure these things (SMS, WLM, RM, etc) are defined early on somewhere.
-\end{itemize}
-
-% ISSUE175: Consider presenting the full goals of the PMI efforts rather than presenting (as is currently done) PMIx as an add-on to PMI-previous.
-
-% ISSUE175: Suggestion:  “PMIX is designed to support clusters of large sizes….” and then delete all text prior to this in the chapter?
-
-\ac{PMIx} represents an attempt to resolve these questions by providing an extended version of the \ac{PMI} definitions specifically designed to support clusters up to exascale and larger sizes.
-The overall objective of the project is not to branch the existing definitions -- in fact, \ac{PMIx} fully supports both of the existing PMI-1 and PMI-2 \acp{API} -- but rather to:
-
-% ISSUE175: Need to determine if PMI-1, PMI-2 API’s should be part of the standard (documented somehow?).  Or it is sufficient to say that these can easily be implemented on top of PMIx API’s?
-
-\begin{compactalphaenum}
-\item add flexibility to the existing \acp{API} by adding an array of key-value ``attribute'' pairs to each \ac{API} signature that allows implementers to customize the behavior of the \ac{API} as future needs emerge without having to alter or create new variants of it;
-
-\item add new APIs that provide extended capabilities such as asynchronous event notification plus dynamic resource allocation and management;
-
-\item establish a collaboration between \ac{SMS} subsystem providers including resource manager, fabric, file system, and programming library developers to define integration points between the various subsystems as well as agreed upon definitions for associated \acp{API}, attribute names, and data types;
-
-\item form a standards-like body for the definitions; and
-
-% ISSUE175: delete?
-
-\item provide a reference implementation of the \ac{PMIx} standard.
-\end{compactalphaenum}
-
-Complete information about the \ac{PMIx} standard and affiliated projects can be found at the \ac{PMIx} web site: \url{https://pmix.org}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Charter}
-\label{chap:intro:charter}
-
-The charter of the PMIx community is to:
-% ISSUE175:  Discussion around use of "PMIx community"... Specification?  Standard?
-% ISSUE175: Some of these bullets could be put above as goals of the standard, some of these are goals of the overall effort?
+Since its introduction, \ac{PMIx} has 
+differentiated 
+itself from earlier \ac{PMI} efforts in the following ways:
 
 \begin{itemize}
-\item Define a set of agnostic APIs (not affiliated with any specific programming model or code base) to support interactions between application processes and the \ac{SMS}.
-% ISSUE175: Remove (not needed anymore, was relevant at one time maybe)
-\item Develop an open source (non-copy-left licensed) standalone ``reference'' library implementation to facilitate adoption of the \ac{PMIx} standard.
-\item Retain transparent backward compatibility with the existing PMI-1 and PMI-2 definitions, any future \ac{PMI} releases, and across all \ac{PMIx} versions.
-% ISSUE175: Not well defined.  Maybe a bit dated compared to all that PMIx does.
-\item Support the ``Instant On'' initiative for rapid startup of applications at exascale and beyond.
-% ISSUE175: If we redefine this section to a “purpose of the standard” then this bullet won’t work 
-\item Work with the \ac{HPC} community to define and implement new \acp{API} that support evolving programming model requirements for application interactions with the \ac{SMS}.
+\item \ac{PMIx} provides an extended version of the \ac{PMI} definitions specifically designed for better scalability.
+\item The target user of \ac{PMIx} has grown from MPI libraries to other libraries
+and languages for HPC.
+\item A reference implementation (\ac{PRI}) of \ac{PMIx} has vastly increased adoption
+\item With the aid of the \ac{PRI}, several implementations of \ac{PMIx} API's have become available leading to further adoption.
 \end{itemize}
 
-% ISSUE175: Again community specific, so if we make this about this document, we need to remove this.
-Participation in the \ac{PMIx} community is open to anyone, and not restricted to only code contributors to the reference implementation.
+These differentiators have led to the creation of this document to formally specify the intended behavior of the \{PMIx} API's.
+
+More information about the \ac{PMIx} specification process and affiliated projects can be found at the \ac{PMIx} web site: \url{https://pmix.org}
+
+\section{Terminology}
+\label{chap:intro:terminology}
+
+TBD
+
+\section{Architectural Overview}
+\label{chap:intro:arch_overview}
+
+This section presents a brief overview of the \ac{PMIx} Architecture~\cite{2017-Castain-EuroMPI}.
+Note that this is a conceptual model solely used to help guide the standards process --- it does not represent
+a design requirement on any \ac{PMIx} implementation. Instead, the model is used by the
+\ac{PMIx} community as a sounding board for evaluating proposed interfaces and avoid unintentionally imposing
+constraints on implementers. 
+
+OR
+
+The presentation of the \ac{PMIx} APIs makes some basic assumptions about how these APIs
+are used and implemented.  These assumptions are generally made only to simplify 
+the presentation and explain \ac{PMIx} with the expectation that most readers 
+have similar concepts on how computing systems are organized today.  However, ultimately
+this document should only be assumed to define a set of APIs 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{PMIx Standard Overview}
-\label{chap:intro:std_overview}
+Built into the model are two guiding principles also reflected in the standard. First,
+\ac{PMIx} operates in the mode of a \textit{messenger}, and not a \textit{doer} --- i.e., the role
+of \ac{PMIx} is to provide communication between the various participants, relaying requests and returning
+responses. The intent of the standard is not to suggest that \ac{PMIx} itself actually perform any of
+the defined operations --- this is left to the various \ac{SMS} elements and/or the application. Any exceptions to that intent are left to the discretion of the particular implementation.
 
-% ISSUE175:  change "standard" to "specification" everywhere?
 
-% ISSUE175:  This opening paragraph is pretty much exactly what we want to change in this PR
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.8\textwidth]{figs/PMIxRoles.pdf}
+  \end{center}
+  \caption{PMIx-SMS Interactions}
+  \label{fig:roles}
+\end{figure*}
+\endgroup
 
-The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRI}.
-Much of this document is specific to the \acf{PRI}'s design and implementation.
-Specifically the standard describes the functionality provided by the \ac{PRI}, and what the \ac{PRI} requires of the clients and \acfp{RM} that use it's interface.
 
-%%%%%%%%%%%
-\subsection{Who should use the standard?}
+Thus, as the diagram in Fig.~\ref{fig:roles} shows, the application is built against a \ac{PMIx} client library that contains the client-side \acp{API},
+attribute definitions, and communication support for interacting with the local \ac{PMIx} server. Intra-process cross-library interactions
+are supported at the client level to avoid unnecessary burdens on the server. Orchestration requests are sent to the
+local \ac{PMIx} server, which subsequently passes them to the host \ac{SMS} (here represented by an \ac{RM} daemon) using the \ac{PMIx} server callback functions the host \ac{SMS} registered during PMIx\_server\_init. The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
 
-% ISSUE175: Not sure if we want to save anything from here?  
+The conceptual model places the burden of fulfilling the request on the host \ac{SMS}. This includes performing any
+inter-node communications, or interacting with other \ac{SMS} elements. Thus, a client request for a network traffic report
+does not go directly from the client to the \ac{FM}, but instead is relayed to the \ac{PMIx} server, and then passed to the host \ac{SMS}
+for execution. This architecture reflects the second principle underlying the standard --- namely, that connectivity is to be minimized by channeling all application interactions with the \ac{SMS} through the local \ac{PMIx} server.
 
-The \ac{PMIx} Standard informs PMIx clients and \acp{RM} of the syntax and semantics of the \ac{PMIx} APIs.
+Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
+which the host can request support from local SMS elements. Once the SMS has transferred the request to
+an appropriate location, a PMIx server interface can be used to pass the request between SMS subsystems.
+For example, a request for network traffic statistics can utilize the
+PMIx networking abstractions to retrieve the information from the \ac{FM}. This reduces the portability and
+interoperability issues between the individual subsystems by transferring the burden of defining the
+interoperable interfaces from the SMS subsystems to the PMIx community, which continues
+to work with those providers to develop the necessary support.
 
-\ac{PMIx} clients (e.g., tools, \ac{MPE} libraries) can use this standard to understand the set of attributes provided by various APIs of the \ac{PRI} and their intended behavior.
+% ISSUE175: Does the notes on how tools differ need to be brought up here?  It's not really critical t
+% to the overall architecture, but it does break the notion of a client interacting with a local server
+
+Tools, whether standalone or embedded in job scripts, are an exception to the communication rule and can connect to
+any PMIx server providing they are given adequate rendezvous information. The PMIx conceptual model views the
+collection of PMIx servers as a cloud-like conglomerate --- i.e., orchestration and information requests can be
+given to any server regardless of location. However, tools frequently execute on locations that may not house an
+operating PMIx server --- e.g., a users notebook computer. Thus, tools need the ability to remotely connect to
+the PMIx server ``cloud''.
+
+The scope of the PMIx standard therefore spans the range of these interactions, between client-and-SMS and between SMS
+subsystems. Note again that this does not impose a requirement on any given PMIx implementation to cover the entire
+range --- implementers are free to return \textit{not supported} from any PMIx function.
+
+% ISSUE175: PRI -> "of a PMIx implementation"
+The \ac{PMIx} Standard defines the behavior of the \acf{PRI}.
+A complete system harnessing the \ac{PMIx} interface requires an agreement between the \ac{PMIx} client, be it a tool or library, and the \ac{PMIx}-enabled \ac{RM}.
+The \ac{PRI} acts as an intermediary between these two entities by providing a standard API for the exchange of requests and responses.
+% ISSUE175: PRI -> "of a PMIx implementation"
+The degree to which the \ac{PMIx} client and the \ac{PMIx}-enabled \ac{RM} may interact needs to be defined by those developer communities.
+The \ac{PMIx} standard can be used to define the specifics of this interaction.
+
+% ISSUE175: The phrase PMIx-enabled RMs really makes no sense for this document
+
+\ac{PMIx} clients (e.g., tools, \ac{MPE} libraries) can use this standard to understand the set of attributes associated with each \ac{PMIx} API and their intended behavior.
 Additional information about the rationale for the selection of specific interfaces and attributes is also provided.
 
 \ac{PMIx}-enabled \acp{RM} can use this standard to understand the expected behavior required of them when they support various interfaces/attributes.
 In addition, optional features and suggestions on behavior are also included in the discussion to help guide \ac{RM} design and implementation.
 
-%%%%%%%%%%%
-\subsection{What is defined in the standard?}
+\subsection{Common API structures and concepts}
 
-%ISSUE175:  Exactly what we want to change:
+add flexibility to the existing \acp{API} by adding an array of key-value ``attribute'' pairs to each \ac{API} signature that allows implementers to customize the behavior of the \ac{API} as future needs emerge without having to alter or create new variants of it;
 
-The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRI}.
-It defines the set of attributes that the \ac{PRI} supports; the set of attributes that are required of a \ac{RM} to support, for a given interface; and the set of optional attributes that an \ac{RM} may choose to support, for a given interface.
+\section{Implementation Expectations}
+\label{chap:intro:required_functionality}
 
-%%%%%%%%%%%
-\subsection{What is \emph{not} defined in the standard?}
-
-% ISSUE175: Many of the terms in this section are not defined by this point in the document and do not make sense for 1st time readers.  
+% Required functionality? (What must be part of an implementation.. possibly leave to other WG?, originally was meant to more like MPI section that defines scope, e.g. debugger's in MPI, etc.  Refer to "use cases" as these sections get developed and how implementations may choose which they support)
 
 No standards body can require an implementer to support something in their standard, and \ac{PMIx} is no different in that regard. While an implementer of the \ac{PMIx} library itself must at least include the standard \ac{PMIx} headers and instantiate each function, they are free to return ``not supported'' for any function they choose not to implement.
 
@@ -141,21 +185,6 @@ Note that an environment that does not include support for a particular attribut
 
 The flip side of that statement is also true: Users who find that their current vendor does not support a function or attribute they require may raise that concern with their vendor and request that the implementation be expanded. Alternatively, users may wish to utilize the \ac{PRRTE} as a ``shim'' between their application and the host environment as it might provide the desired support until the vendor can respond. Finally, in the extreme, one can exploit the portability of PMIx-based applications to change vendors.
 
-%%%%%%%%%%%
-\subsection{General Guidance for PMIx Users and Implementors}
-
-% ISSUE175: Should this be the introduction to this chapter (current 1.1 obviously should not)?
-
-% ISSUE175: PRI -> "of a PMIx implementation"
-The \ac{PMIx} Standard defines the behavior of the \acf{PRI}.
-A complete system harnessing the \ac{PMIx} interface requires an agreement between the \ac{PMIx} client, be it a tool or library, and the \ac{PMIx}-enabled \ac{RM}.
-The \ac{PRI} acts as an intermediary between these two entities by providing a standard API for the exchange of requests and responses.
-% ISSUE175: PRI -> "of a PMIx implementation"
-The degree to which the \ac{PMIx} client and the \ac{PMIx}-enabled \ac{RM} may interact needs to be defined by those developer communities.
-The \ac{PMIx} standard can be used to define the specifics of this interaction.
-
-% ISSUE175: The phrase PMIx-enabled RMs really makes no sense for this document
-
 \ac{PMIx} clients (e.g., tools, \ac{MPE} libraries) may find that they depend only on a small subset of interfaces and attributes to work correctly.
 \ac{PMIx} clients are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes that are required for correct operation, and are optional but recommended for full functionality.
 The \ac{PMIx} standard cannot define this list for all given \ac{PMIx} clients, but such a list is valuable to \acp{RM} desiring to support these clients.
@@ -165,112 +194,8 @@ The \ac{PMIx} standard cannot define this list for all given \ac{PMIx} clients, 
 The \ac{PMIx} standard cannot define this list for all given \ac{PMIx}-enabled \acp{RM}, but such a list is valuable to \ac{PMIx} clients desiring to support a broad range of \ac{PMIx}-enabled \acp{RM}.
 
 
+% ISSUE175: Should this be the introduction to this chapter (current 1.1 obviously should not)?
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{PMIx Architecture Overview}
-\label{chap:intro:arch_overview}
-
-
-% ISSUE175: Consider wholesale re-write with these goals:  
-% 1) Define the terminology used throughout document
-% 2) PMIx was designed to respect the archicture of  current HPC systems (e.g. separation between MPI and resource manager).  
-% Do we want to use this opportunity to maintain that PMIx should focus on providing access to current functionality of HPC systems rather than re-architect existing functionality? 
-% 3) PMIx to support distributed systems with a focus on the communication aspect.  
-
-This section presents a brief overview of the \ac{PMIx} Architecture~\cite{2017-Castain-EuroMPI}.
-Note that this is a conceptual model solely used to help guide the standards process --- it does not represent
-a design requirement on any \ac{PMIx} implementation. Instead, the model is used by the
-\ac{PMIx} community as a sounding board for evaluating proposed interfaces and avoid unintentionally imposing
-constraints on implementers. Built into the model are two guiding principles also reflected in the standard. First,
-\ac{PMIx} operates in the mode of a \textit{messenger}, and not a \textit{doer} --- i.e., the role
-of \ac{PMIx} is to provide communication between the various participants, relaying requests and returning
-responses. The intent of the standard is not to suggest that \ac{PMIx} itself actually perform any of
-the defined operations --- this is left to the various \ac{SMS} elements and/or the application. Any exceptions to that intent are left to the discretion of the particular implementation.
-
-\begingroup
-\begin{figure*}[ht!]
-  \begin{center}
-    \includegraphics[clip,width=0.8\textwidth]{figs/PMIxRoles.pdf}
-  \end{center}
-  \caption{PMIx-SMS Interactions}
-  \label{fig:roles}
-\end{figure*}
-\endgroup
-
-
-Thus, as the diagram in Fig.~\ref{fig:roles} shows, the application is built against a \ac{PMIx} client library that contains the client-side \acp{API},
-attribute definitions, and communication support for interacting with the local \ac{PMIx} server. Intra-process cross-library interactions
-are supported at the client level to avoid unnecessary burdens on the server. Orchestration requests are sent to the
-local \ac{PMIx} server, which subsequently passes them to the host \ac{SMS} (here represented by an \ac{RM} daemon) using the \ac{PMIx} server callback functions the host \ac{SMS} registered during PMIx\_server\_init. The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
-
-The conceptual model places the burden of fulfilling the request on the host \ac{SMS}. This includes performing any
-inter-node communications, or interacting with other \ac{SMS} elements. Thus, a client request for a network traffic report
-does not go directly from the client to the \ac{FM}, but instead is relayed to the \ac{PMIx} server, and then passed to the host \ac{SMS}
-for execution. This architecture reflects the second principle underlying the standard --- namely, that connectivity is to be minimized by channeling all application interactions with the \ac{SMS} through the local \ac{PMIx} server.
-
-Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
-which the host can request support from local SMS elements. Once the SMS has transferred the request to
-an appropriate location, a PMIx server interface can be used to pass the request between SMS subsystems.
-For example, a request for network traffic statistics can utilize the
-PMIx networking abstractions to retrieve the information from the FM. This reduces the portability and
-interoperability issues between the individual subsystems by transferring the burden of defining the
-interoperable interfaces from the SMS subsystems to the PMIx community, which continues
-to work with those providers to develop the necessary support.
-
-% ISSUE175: Does the notes on how tools differ need to be brought up here?  It's not really critical t
-% to the overall architecture, but it does break the notion of a client interacting with a local server
-
-Tools, whether standalone or embedded in job scripts, are an exception to the communication rule and can connect to
-any PMIx server providing they are given adequate rendezvous information. The PMIx conceptual model views the
-collection of PMIx servers as a cloud-like conglomerate --- i.e., orchestration and information requests can be
-given to any server regardless of location. However, tools frequently execute on locations that may not house an
-operating PMIx server --- e.g., a users notebook computer. Thus, tools need the ability to remotely connect to
-the PMIx server ``cloud''.
-
-The scope of the PMIx standard therefore spans the range of these interactions, between client-and-SMS and between SMS
-subsystems. Note again that this does not impose a requirement on any given PMIx implementation to cover the entire
-range --- implementers are free to return \textit{not supported} from any PMIx function.
-
-
-%%%%%%%%%%%
-\subsection{The \acf{PRI}}
-
-% ISSUE175: Small group on today’s call feel 1.3.1 and 1.3.2 need to be moved to referencåe implementation User’s Guide.   Whether to include a small statement recognizing the existence and value of the reference implementation is up for debate.
-
-The \ac{PMIx} community has committed to providing a complete, reference implementation of each version of the standard. Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \acf{PRI} --- any implementation that supports the defined \acp{API} is a \ac{PMIx} Standard compliant implementation.
-The \ac{PRI} is provided solely for the following purposes:
-\begin{itemize}
-\item Validation of the standard.\\
-No proposed change and/or extension to the \ac{PMIx} standard is accepted without an accompanying prototype implementation in the \ac{PRI}.
-This ensures that the proposal has undergone at least some minimal level of scrutiny and testing before being considered.
-\item Ease of adoption.\\
-The \ac{PRI} is designed to be particularly easy for resource managers (and the \ac{SMS} in general) to adopt, thus facilitating a rapid uptake into that community for application portability.
-Both client and server \ac{PMIx} libraries are included, along with examples of client usage and server-side integration.
-A list of supported environments and versions is maintained on the \ac{PMIx} web site \url{https://pmix.org/support/faq/what-apis-are-supported-on-my-rm/}
-\end{itemize}
-
-The \ac{PRI} does provide some internal implementations that lie outside the scope of the \ac{PMIx} standard. This includes several convenience macros as well as support for consolidating collectives for optimization purposes (e.g., the \ac{PMIx} server aggregates all local \refapi{PMIx_Fence} calls before
-passing them to the \ac{SMS} for global execution). In a few additional cases, the \ac{PMIx} community (in partnership with the \ac{SMS} subsystem providers) have determined that a base level of support for a given operation can best be portably provided by including it in the \ac{PRI}.
-
-Instructions for downloading, and installing the \ac{PRI} are available
-on the community's web site \url{https://pmix.org/code/getting-the-reference-implementation/}.The \ac{PRI} targets support for the Linux operating system.
-A reasonable effort is made to support all major, modern Linux distributions; however, validation is limited to the most recent 2-3 releases of RedHat Enterprise Linux (RHEL), Fedora, CentOS, and SUSE Linux Enterprise Server (SLES).
-In addition, development support is maintained for Mac OSX.
-Production support for vendor-specific operating systems is included as provided by the vendor.
-
-
-%%%%%%%%%%%
-\subsection{The PMIx Reference RunTime Environment (PRRTE)}
-
-The \ac{PMIx} community has also released \ac{PRRTE} --- i.e., a runtime environment
-containing the reference implementation and capable of operating within a host \ac{SMS}. \ac{PRRTE}
-provides an easy way of exploring \ac{PMIx} capabilities and testing PMIx-based
-applications outside of a PMIx-enabled environment by providing a ``shim'' between the application and the host environment that includes full support for the \ac{PRI}. The intent of \ac{PRRTE} is not to replace any existing production environment, but rather to enable developers to work on systems that do not yet feature a PMIx-enabled host \ac{SMS} or one that lacks a \ac{PMIx} feature of interest. Instructions for downloading,
-installing, and using \ac{PRRTE} are available
-on the community's web site \url{https://pmix.org/code/getting-the-pmix-reference-server/}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Organization of this document}
 
 The remainder of this document is structured as follows:
